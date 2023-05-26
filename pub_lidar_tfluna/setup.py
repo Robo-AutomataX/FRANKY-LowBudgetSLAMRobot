@@ -23,7 +23,8 @@ setup(
             'talker = pub_lidar_tfluna.publisher_function:main',
             'listener = pub_lidar_tfluna.subscriber_function:main',
             'direc_subscriber = pub_lidar_tfluna.direct_subscriber:main',
-            'direc_subscriber_arduino = pub_lidar_tfluna.direct_subscriber_arduino:main'
+            'direc_subscriber_arduino = pub_lidar_tfluna.direct_subscriber_arduino:main',
+            'direc_publisher_lidar = pub_lidar_tfluna.direct_publisher_lidar:main'
         ],
     },
 )

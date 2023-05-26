@@ -1,7 +1,8 @@
 
 #Este programa se suscribe al topic en el cual se publican las teclas
 #que son presionadas por el usuario para después mandar esos datos
-#al serial de arduino, el arduino ya hace calculos con esos datos recibidos
+#al serial del arduino MEGA (para controlar los motores de las llantas) y al
+#del arduino UNO (para controlar el motor del LIDAR)
 
 
 
