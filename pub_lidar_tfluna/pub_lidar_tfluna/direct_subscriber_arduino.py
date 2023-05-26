@@ -1,3 +1,10 @@
+
+#Este programa se suscribe al topic en el cual se publican las teclas
+#que son presionadas por el usuario para después mandar esos datos
+#al serial de arduino, el arduino ya hace calculos con esos datos recibidos
+
+
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
@@ -14,17 +21,21 @@ class KeyboardSerial(Node):
             10
         )
         self.serial_port = serial.Serial('/dev/ttyACM0', 115200)  # Ajusta el puerto serie y la velocidad según tu configuración
+        self.serial_port2= serial.Serial('/dev/ttyACM1', 115200)
 
     def callback(self, msg):
         key = msg.data
         self.get_logger().info('Tecla presionada: %s' % key)
         self.send_to_arduino(key)
 
+
     def send_to_arduino(self, data):
         try:
             self.serial_port.write(data.encode('utf-8'))
+            self.serial_port2.write(data.encode('utf-8'))
         except serial.SerialException:
-            self.get_logger().error('Error al enviar datos al Arduino.')
+            self.get_logger().error('Error al enviar datos al Arduino MEGA.')
+            self.get_logger().error('Error al enviar datos al Arduino UNO.')
 
 def main(args=None):
     rclpy.init(args=args)

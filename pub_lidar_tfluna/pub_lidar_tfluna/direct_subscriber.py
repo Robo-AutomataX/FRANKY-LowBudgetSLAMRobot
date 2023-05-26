@@ -1,3 +1,7 @@
+#Este programa se suscribe al topic en el cual se publican las teclas
+#que son presionadas por el usurio
+
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String

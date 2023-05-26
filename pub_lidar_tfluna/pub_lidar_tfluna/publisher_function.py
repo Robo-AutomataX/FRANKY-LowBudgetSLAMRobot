@@ -24,7 +24,7 @@ class MinimalPublisher(Node):
     def __init__(self):
         super().__init__('minimal_publisher')
         self.publisher_ = self.create_publisher(String, 'LiDAR/TfLuna', 10)
-        timer_period = 0.5  # seconds
+        timer_period = 0.01  # seconds
         luna_enableOutput  = [0x5a,0x05,0x07,0x01,0x00]
 
         if self.interface_luna.isOpen() :
