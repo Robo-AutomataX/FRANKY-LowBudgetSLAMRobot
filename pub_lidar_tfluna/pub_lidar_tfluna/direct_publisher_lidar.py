@@ -15,11 +15,14 @@ class MinimalPublisher(Node):
 
     def __init__(self,frame_id):
         super().__init__('minimal_publisher')
+
+        self.ser_motores = serial.Serial('/dev/ttyACM1',115200)
         self.publisher_ = self.create_publisher(LaserScan, 'lidar_publisher', 10)
-        timer_period = 0.01  # seconds
+        timer_period = 0.001  # seconds
         luna_enableOutput  = [0x5a,0x05,0x07,0x01,0x00]
 
         self.scan = LaserScan()
+        self.contador = 1
         #self.scan.header.frame_id = 'map'
         #self.scan.range_min = 0.0 #Distancia mínima que puede medir
         #self.scan.range_max = 8.0 #Distancia máxima que puede medir
@@ -27,7 +30,7 @@ class MinimalPublisher(Node):
         #self.scan.angle_min = 0.0 #Ángulo mínimo (cero grados)
         #self.scan.angle_increment = math.pi/1024.0 #El angulo que barre en 1024 pasos
 
-        #self.scan.scan_time =   #Tiempo total del escaneo
+        #self.scan.scan_time = 10.288484  #Tiempo total del escaneo
         #self.scan.ranges = self.distances
         #self.publisher_publisher(self.scan)
 
@@ -55,7 +58,6 @@ class MinimalPublisher(Node):
 
 
     def timer_callback(self):
-
         counter = self.interface_luna.in_waiting
         bytes_to_read = 9
         if counter > bytes_to_read-1:
@@ -64,34 +66,64 @@ class MinimalPublisher(Node):
 
             if bytes_serial[0] == 0x59 and bytes_serial[1] == 0x59: # check first two bytes
                 distance = bytes_serial[2] + bytes_serial[3]*256 # distance in next two bytes
-                self.distances.append(distance)
+
                 #self.scan.data = 'Distance: %d cm' % distance
                 #   f"Strength: {strength:2.0f} / 65535 (16-bit), "
                 #   f"Chip Temperature: {temperature:2.1f} C")
                 #self.publisher_.publish(scan)
                 #self.get_logger().info('Publishing: "%s"' % distance)
 
+                if self.ser_motores.in_waiting>0:
+                    pass
+                    #print(self.ser_motores.readline().decode('utf-8'))
 
 
 
-
-                self.scan.header.frame_id = 'map'
-                self.scan.angle_min = 0.0
-                self.scan.angle_max = math.pi
-                self.scan.angle_increment = math.pi /4
-                self.scan.range_min = 0.0
-                self.scan.range_max = 7.0
+                #self.scan.header.frame_id = 'map'
+                #self.scan.angle_min = 0.0
+                #self.scan.angle_max = math.pi
+                #self.scan.angle_increment = math.pi /4
+                #self.scan.range_min = 0.0
+                #self.scan.range_max = 7.0
                 #self.scan.time_increment = 1.0  # No se necesita incremento de tiempo en este c>
-                self.scan.scan_time = 4.0  # Tiempo total de escaneo
+                #self.scan.scan_time = 4.0  # Tiempo total de escaneo
 
-                self.scan.ranges = [4.0,4.0,4.0,4.0]
+                #self.scan.ranges = [4.0,4.0,4.0,4.0]
 
-                self.publisher_.publish(self.scan)
+                #self.publisher_.publish(self.scan)
 
 
-        if len(self.distances)==1048:
-            #print(self.distances)
-            self.distances = []
+
+
+
+                if self.ser_motores.in_waiting > 0:
+                    serial_variable = self.ser_motores.readline().decode('utf-8')
+
+                    distance = float(distance)/100.0
+
+                    print("Paso: "+ serial_variable +" distancia: " +  str(distance))
+                    self.distances.append(distance)
+                    if len(self.distances)==1024:
+
+                        self.scan.header.frame_id = 'map'
+                        self.scan.range_min = 0.0 #Distancia mínima que puede medir
+                        self.scan.range_max = 8.0 #Distancia máxima que puede medir
+                        self.scan.angle_max = math.pi #Ángulo máximo (media vuelta)
+                        self.scan.angle_min = 0.0 #Ángulo mínimo (cero grados)
+                        self.scan.angle_increment = math.pi/1024.0 #El angulo que barre en 1024 pasos
+
+                        self.scan.scan_time = 10.288484  #Tiempo total del escaneo
+                        self.scan.ranges = self.distances
+                        self.publisher_.publish(self.scan)
+
+
+                        print(self.distances)
+                        self.distances = []
+
+
+
+
+
 def main(args=None):
     rclpy.init(args=args)
 
