@@ -23,6 +23,7 @@ class MinimalPublisher(Node):
 
         self.scan = LaserScan()
         self.contador = 1
+        self.aux = 0
         #self.scan.header.frame_id = 'map'
         #self.scan.range_min = 0.0 #Distancia mínima que puede medir
         #self.scan.range_max = 8.0 #Distancia máxima que puede medir
@@ -105,6 +106,13 @@ class MinimalPublisher(Node):
                     self.distances.append(distance)
                     if len(self.distances)==1024:
 
+                        if self.aux == 1:
+                           self.distances.reverse()
+                           self.aux = 0
+                        elif self.aux == 0:
+                           self.aux = 1
+
+
                         self.scan.header.frame_id = 'map'
                         self.scan.range_min = 0.0 #Distancia mínima que puede medir
                         self.scan.range_max = 8.0 #Distancia máxima que puede medir
@@ -119,7 +127,6 @@ class MinimalPublisher(Node):
 
                         print(self.distances)
                         self.distances = []
-
 
 
 
