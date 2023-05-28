@@ -27,15 +27,21 @@ class KeyboardSerial(Node):
     def callback(self, msg):
         key = msg.data
         self.get_logger().info('Tecla presionada: %s' % key)
-        self.send_to_arduino(key)
+        if key=="g":
+            self.send_to_arduino_uno(key)
+        else:
+            self.send_to_arduino_mega(key)
 
-
-    def send_to_arduino(self, data):
+    def send_to_arduino_mega(self,data):
         try:
             self.serial_port.write(data.encode('utf-8'))
+        except serial.SerialException:
+            self.get_logger().error('Error al enviar datos al arduino MEGA')
+
+    def send_to_arduino_uno(self, data):
+        try:
             self.serial_port2.write(data.encode('utf-8'))
         except serial.SerialException:
-            self.get_logger().error('Error al enviar datos al Arduino MEGA.')
             self.get_logger().error('Error al enviar datos al Arduino UNO.')
 
 def main(args=None):
